@@ -1,2 +1,3 @@
-# food-recipes-website-with-internet-identity-login-and-user-submitted-recipe-shar
-Exported from Caffeine project: Food Recipes Website with Internet Identity Login and User-Submitted Recipe Sharing
+## Food Recipes Website with Internet Identity Login and User-Submitted Recipe Sharing
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

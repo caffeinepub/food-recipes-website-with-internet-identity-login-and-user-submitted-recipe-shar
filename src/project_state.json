@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Website for food recipes with user accounts and user-submitted recipe sharing.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Warm minimal 'recipe book + spoon' logo in flat vector style (recipe-logo.dim_512x512.png)\n- Soft textured hero banner with food-themed abstract shapes (recipe-hero.dim_1600x600.png)\n- Set of 6 minimal monochrome food icons (plate, chef hat, whisk, bowl, leaf, timer) on transparent background (food-icons-set.dim_1024x1024.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-authentication-using-internet-identity-so-users-can-sign-in-and-sign-out-and-the-ui-reflects-the-current-auth-state-signed-out-vs-signed-in",
+      "title": "Implement authentication using Internet Identity so users can sign in and sign out, and the UI reflects the current auth state (signed out vs signed in).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-public-recipes-experience-where-any-visitor-can-browse-a-list-of-published-recipes-and-open-a-recipe-detail-page-that-shows-full-recipe-content",
+      "title": "Create a public recipes experience where any visitor can browse a list of published recipes and open a recipe detail page that shows full recipe content.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-allow-authenticated-users-to-create-and-publish-their-own-recipes-via-a-new-recipe-form-and-ensure-that-only-the-recipe-owner-can-edit-or-delete-their-own-recipes",
+      "title": "Allow authenticated users to create and publish their own recipes via a 'New Recipe' form, and ensure that only the recipe owner can edit or delete their own recipes.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-coherent-distinct-visual-theme-and-apply-it-consistently-across-the-site-typography-colors-spacing-and-components-suitable-for-a-food-recipe-app-avoid-a-blue-purple-primary-palette",
+      "title": "Create a coherent, distinct visual theme and apply it consistently across the site (typography, colors, spacing, and components) suitable for a food/recipe app; avoid a blue/purple primary palette.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-image-assets-to-support-the-ui-theme-and-render-them-from-the-frontend-as-static-files-under-frontend-public-assets-generated",
+      "title": "Add generated static image assets to support the UI theme and render them from the frontend as static files under frontend/public/assets/generated.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Build a food recipes website (browse/view recipes).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add user login/authentication functionality.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Allow users to share/publish their own recipes on the site.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Persist recipe data in the Motoko canister so that recipes remain available after page refresh and canister upgrades (using stable storage patterns).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Food Recipes Website with Internet Identity Login and User-Submitted Recipe Sharing",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

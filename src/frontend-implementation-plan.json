@@ -1,0 +1,195 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Food Recipes Website (Frontend) with Internet Identity Auth and Recipe Sharing",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Internet Identity sign in/out UI with auth-aware layout and profile setup, reflecting current auth state.",
+      "acceptanceCriteria": [
+        "A signed-out user can initiate Internet Identity login and becomes signed in after completing it.",
+        "A signed-in user can sign out and returns to the signed-out state.",
+        "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
+        "Backend methods that modify user-owned data reject anonymous callers (not authenticated)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the app shell with header/navigation, a login/logout control, and route/view wiring for browse, recipe detail, and new/edit recipe flows. Use the selected authorization component’s frontend guidance to reflect auth state and clear cached app data on logout (with React Query). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Implement a login/logout button using the existing useInternetIdentity hook, and clear React Query cache on logout per the selected authorization component guidance. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/ProfileSetupDialog.tsx",
+          "operation": "create",
+          "description": "Add a first-login profile setup dialog that prompts for a human-readable name and persists it via backend getCallerUserProfile/saveCallerUserProfile. Compose UI using shadcn-ui components (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
+          "operation": "create",
+          "description": "Create a React Query hook to load the current user profile via the actor (getCallerUserProfile), following the selected authorization component’s guidance to avoid modal flash by accurately reflecting actor dependency. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Ensure the QueryClient is configured to support auth transitions cleanly (e.g., predictable caching/invalidations) and that the app root works with the auth-aware shell in App.tsx."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Provide public recipe browsing and recipe detail viewing without requiring login.",
+      "acceptanceCriteria": [
+        "The home/browse view loads and displays a list of published recipes from the backend.",
+        "Selecting a recipe opens a detail view that shows at minimum: title, description, ingredients, and steps.",
+        "Unauthenticated users can browse and view published recipes without logging in.",
+        "If there are no recipes yet, the UI shows an empty state message in English (e.g., 'No recipes yet')."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/RecipesBrowsePage.tsx",
+          "operation": "create",
+          "description": "Create the public browse view showing a hero/banner section and a list of recipes loaded from the backend (getAllRecipes), including an English empty state (e.g., 'No recipes yet')."
+        },
+        {
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
+          "operation": "create",
+          "description": "Create a recipe detail view that loads a recipe by id (getRecipe) and displays title, description, ingredients, and steps."
+        },
+        {
+          "path": "frontend/src/hooks/useRecipes.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for fetching recipe lists and recipe details using the existing useActor hook (public browsing must work with anonymous actor)."
+        },
+        {
+          "path": "frontend/src/components/recipes/RecipeCard.tsx",
+          "operation": "create",
+          "description": "Create a reusable recipe card/list item component for the browse view (compose shadcn-ui primitives as needed; do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire RecipesBrowsePage as the default view and wire navigation to RecipeDetailPage (e.g., via a minimal router or in-app view state) so pages are not orphaned."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Enable authenticated users to create, edit, and delete only their own recipes, with UI gating and graceful authorization error handling.",
+      "acceptanceCriteria": [
+        "A signed-in user can open a 'New Recipe' form and submit a recipe successfully.",
+        "Newly published recipes appear in the public browse list and are viewable by others.",
+        "A signed-in user can edit and delete only recipes they created; attempts to edit/delete others' recipes are blocked in the UI and rejected by the backend.",
+        "The 'New Recipe' and edit actions are not available to signed-out users (or they are prompted to sign in)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/RecipeEditorPage.tsx",
+          "operation": "create",
+          "description": "Create a recipe editor page that supports both create and edit modes. Gate create/edit behind Internet Identity login (prompt signed-out users to sign in). Use ownership checks (recipe.owner vs current principal) to enable edit/delete controls only for the owner, following the selected authorization component guidance. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/recipes/RecipeForm.tsx",
+          "operation": "create",
+          "description": "Create a 'New Recipe' / 'Edit Recipe' form UI with English labels for title, description, ingredients, and steps; compose using shadcn-ui form inputs/buttons (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useRecipeMutations.ts",
+          "operation": "create",
+          "description": "Add React Query mutations for createRecipe, updateRecipe, and deleteRecipe. On success, invalidate/refetch recipe queries so new/updated recipes appear in the browse list and detail views. Handle authorization failures gracefully by surfacing an English error message."
+        },
+        {
+          "path": "frontend/src/components/feedback/AppToasts.tsx",
+          "operation": "create",
+          "description": "Add a lightweight feedback mechanism for success/error messages (compose shadcn-ui toast/alert primitives if available; do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire navigation/actions to the RecipeEditorPage for 'New Recipe' and for editing from the recipe detail view; ensure these routes/views are registered and accessible only when appropriate."
+        },
+        {
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
+          "operation": "modify",
+          "description": "Add owner-only edit/delete actions on the detail page, with UI blocking for non-owners and signed-out users; connect to mutation hooks and show English confirmation/error states."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Apply a cohesive warm food/recipe theme (non blue/purple primary) with consistent layout, typography, spacing, and English copy.",
+      "acceptanceCriteria": [
+        "All pages share consistent layout, spacing, and component styling.",
+        "Primary UI colors are not blue/purple-dominant.",
+        "User-facing text is in English across navigation, buttons, empty states, and form labels."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Define global CSS variables/tailwind base layer for a warm palette (e.g., orange/amber/earth tones) and consistent typography/spacing, ensuring the primary palette is not blue/purple-dominant."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Adjust theme tokens/extended colors (via CSS variables mapping) as needed to support the warm recipe theme consistently across components."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "create",
+          "description": "Create a shared layout wrapper for consistent header, content container spacing, and page structure; compose shadcn-ui components where helpful (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wrap pages with AppLayout and ensure all navigation/buttons/empty states use English text and consistent styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add and render generated static images (logo, hero banner, icon set) from frontend/public/assets/generated.",
+      "acceptanceCriteria": [
+        "The generated images listed in imageRequirements.required exist under frontend/public/assets/generated.",
+        "At least the logo is visible in the app header/navigation and the hero/banner image is visible on the home page.",
+        "Images are served as static frontend assets (not fetched from the backend)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/recipe-logo.dim_512x512.png",
+          "operation": "create",
+          "description": "Add the generated static logo asset at frontend/public/assets/generated/recipe-logo.dim_512x512.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/recipe-hero.dim_1600x600.png",
+          "operation": "create",
+          "description": "Add the generated static hero banner asset at frontend/public/assets/generated/recipe-hero.dim_1600x600.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/food-icons-set.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated static icon set asset at frontend/public/assets/generated/food-icons-set.dim_1024x1024.png."
+        },
+        {
+          "path": "frontend/src/components/layout/AppHeader.tsx",
+          "operation": "create",
+          "description": "Create a header component that displays the logo image from frontend/public/assets/generated/recipe-logo.dim_512x512.png alongside navigation and auth controls. Compose shadcn-ui components as needed (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecipesBrowsePage.tsx",
+          "operation": "modify",
+          "description": "Render the hero/banner image from frontend/public/assets/generated/recipe-hero.dim_1600x600.png in the browse view hero section, and optionally incorporate the icon set frontend/public/assets/generated/food-icons-set.dim_1024x1024.png in supporting UI elements."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Wire AppHeader into the shared layout so the logo is visible across the app."
+        }
+      ]
+    }
+  ]
+}

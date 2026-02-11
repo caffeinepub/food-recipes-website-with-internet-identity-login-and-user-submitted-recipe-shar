@@ -1,0 +1,137 @@
+{
+  "kind": "build_request",
+  "title": "Food Recipes Website with Internet Identity Login and User-Submitted Recipe Sharing",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement authentication using Internet Identity so users can sign in and sign out, and the UI reflects the current auth state (signed out vs signed in).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Aslo add the function of login"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A signed-out user can initiate Internet Identity login and becomes signed in after completing it.",
+        "A signed-in user can sign out and returns to the signed-out state.",
+        "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
+        "Backend methods that modify user-owned data reject anonymous callers (not authenticated)."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create a public recipes experience where any visitor can browse a list of published recipes and open a recipe detail page that shows full recipe content.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Create  an website for food recipes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The home/browse view loads and displays a list of published recipes from the backend.",
+        "Selecting a recipe opens a detail view that shows at minimum: title, description, ingredients, and steps.",
+        "Unauthenticated users can browse and view published recipes without logging in.",
+        "If there are no recipes yet, the UI shows an empty state message in English (e.g., 'No recipes yet')."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Allow authenticated users to create and publish their own recipes via a 'New Recipe' form, and ensure that only the recipe owner can edit or delete their own recipes.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "sharing their own recipes by users"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A signed-in user can open a 'New Recipe' form and submit a recipe successfully.",
+        "Newly published recipes appear in the public browse list and are viewable by others.",
+        "A signed-in user can edit and delete only recipes they created; attempts to edit/delete others' recipes are blocked in the UI and rejected by the backend.",
+        "The 'New Recipe' and edit actions are not available to signed-out users (or they are prompted to sign in)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Persist recipe data in the Motoko canister so that recipes remain available after page refresh and canister upgrades (using stable storage patterns).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Create  an website for food recipes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After creating recipes, refreshing the browser still shows the same recipes.",
+        "State is stored in a stable structure suitable for upgrades (no loss of recipes when upgrading the canister in development workflow)."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Create a coherent, distinct visual theme and apply it consistently across the site (typography, colors, spacing, and components) suitable for a food/recipe app; avoid a blue/purple primary palette.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Create  an website for food recipes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All pages share consistent layout, spacing, and component styling.",
+        "Primary UI colors are not blue/purple-dominant.",
+        "User-facing text is in English across navigation, buttons, empty states, and form labels."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add generated static image assets to support the UI theme and render them from the frontend as static files under frontend/public/assets/generated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Create  an website for food recipes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The generated images listed in imageRequirements.required exist under frontend/public/assets/generated.",
+        "At least the logo is visible in the app header/navigation and the hero/banner image is visible on the home page.",
+        "Images are served as static frontend assets (not fetched from the backend)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Use Internet Identity as the only authentication method.",
+    "Backend must remain a single Motoko actor (no additional backend services).",
+    "Do not modify files in frontend/src/components/ui or other immutable paths; compose them instead.",
+    "Use English for all user-facing text."
+  ],
+  "nonGoals": [
+    "Payments, subscriptions, or premium content.",
+    "Third-party OAuth (Google/Facebook/GitHub/Auth0).",
+    "Real-time chat, comments, likes, or notifications.",
+    "External database integrations."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Warm minimal 'recipe book + spoon' logo in flat vector style (recipe-logo.dim_512x512.png)",
+      "Soft textured hero banner with food-themed abstract shapes (recipe-hero.dim_1600x600.png)",
+      "Set of 6 minimal monochrome food icons (plate, chef hat, whisk, bowl, leaf, timer) on transparent background (food-icons-set.dim_1024x1024.png)"
+    ],
+    "edits": []
+  }
+}

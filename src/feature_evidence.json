@@ -1,0 +1,115 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-authentication-using-internet-identity-so-users-can-sign-in-and-sign-out-and-the-ui-reflects-the-current-auth-state-signed-out-vs-signed-in",
+      "featureTitle": "Implement authentication using Internet Identity so users can sign in and sign out, and the UI reflects the current auth state (signed out vs signed in).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx",
+        "frontend/src/main.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-public-recipes-experience-where-any-visitor-can-browse-a-list-of-published-recipes-and-open-a-recipe-detail-page-that-shows-full-recipe-content",
+      "featureTitle": "Create a public recipes experience where any visitor can browse a list of published recipes and open a recipe detail page that shows full recipe content.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/recipes/RecipeCard.tsx",
+        "frontend/src/pages/RecipeDetailPage.tsx",
+        "frontend/src/pages/RecipesBrowsePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-allow-authenticated-users-to-create-and-publish-their-own-recipes-via-a-new-recipe-form-and-ensure-that-only-the-recipe-owner-can-edit-or-delete-their-own-recipes",
+      "featureTitle": "Allow authenticated users to create and publish their own recipes via a 'New Recipe' form, and ensure that only the recipe owner can edit or delete their own recipes.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/recipes/RecipeForm.tsx",
+        "frontend/src/hooks/useRecipeMutations.ts",
+        "frontend/src/pages/RecipeDetailPage.tsx",
+        "frontend/src/pages/RecipeEditorPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-coherent-distinct-visual-theme-and-apply-it-consistently-across-the-site-typography-colors-spacing-and-components-suitable-for-a-food-recipe-app-avoid-a-blue-purple-primary-palette",
+      "featureTitle": "Create a coherent, distinct visual theme and apply it consistently across the site (typography, colors, spacing, and components) suitable for a food/recipe app; avoid a blue/purple primary palette.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-generated-static-image-assets-to-support-the-ui-theme-and-render-them-from-the-frontend-as-static-files-under-frontend-public-assets-generated",
+      "featureTitle": "Add generated static image assets to support the UI theme and render them from the frontend as static files under frontend/public/assets/generated.",
+      "files": [
+        "frontend/src/components/layout/AppHeader.tsx",
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/pages/RecipesBrowsePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

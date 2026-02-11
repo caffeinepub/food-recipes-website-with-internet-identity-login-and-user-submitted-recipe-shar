@@ -1,0 +1,92 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-11T03:23:27.162Z",
+  "summary": "Core recipe browsing, detail, create/edit/delete flows and Internet Identity-based login UI are present, along with a warm theme. However, stable persistence across upgrades is not evidenced, the signed-in identifier is not displayed, and the required generated image assets/hero banner usage are not fully evidenced. Several unrequested features were added (user profiles, admin-token-based access control init, and a branded footer link).",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
+      "reason": "Login/logout button exists, but no UI element in the shown diff displays the user's Principal/identifier or an explicit signed-in indicator beyond showing a Logout button.",
+      "evidence": [
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/layout/AppHeader.tsx"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Persist recipe data in the Motoko canister so that recipes remain available after page refresh and canister upgrades (using stable storage patterns).",
+      "reason": "Backend shows in-memory vars/maps for recipes and profiles (e.g., `var nextRecipeId` and `let recipes = Map.empty...`) but the diff snippet does not show any stable variables or `preupgrade`/`postupgrade` logic to preserve state across upgrades.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Add generated static image assets under frontend/public/assets/generated (logo, hero banner, and icons set) and render at least the logo in the header and the hero/banner on the home page.",
+      "reason": "The header references the logo path, but the diff summary does not show any added files under `frontend/public/assets/generated`, and the home page uses a CSS gradient hero section without rendering the required hero banner image. The icons set is also not referenced.",
+      "evidence": [
+        "frontend/src/components/layout/AppHeader.tsx",
+        "frontend/src/pages/RecipesBrowsePage.tsx",
+        "frontend/src/index.css"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "User profile management (save/get profile) and a mandatory name capture dialog after login.",
+      "reason": "BuildRequest focuses on recipe sharing and Internet Identity auth; it does not request user profiles or a profile setup flow.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx",
+        "frontend/src/pages/RecipesBrowsePage.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useRecipeMutations.ts"
+      ]
+    },
+    {
+      "description": "Admin-token/secret-based access control initialization via URL parameter (`caffeineAdminToken`) and custom authorization mixins.",
+      "reason": "BuildRequest requires Internet Identity as the only authentication method and does not request an admin token mechanism or secret initialization path.",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts",
+        "frontend/src/utils/urlParams.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Footer with external attribution link to caffeine.ai.",
+      "reason": "Not requested in requirements and introduces additional branding/navigation content.",
+      "evidence": [
+        "frontend/src/components/layout/AppFooter.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ProfileSetupDialog.tsx",
+    "frontend/src/components/layout/AppFooter.tsx",
+    "frontend/src/components/layout/AppHeader.tsx",
+    "frontend/src/components/layout/AppLayout.tsx",
+    "frontend/src/components/recipes/RecipeCard.tsx",
+    "frontend/src/components/recipes/RecipeForm.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/hooks/useRecipeMutations.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/RecipeDetailPage.tsx",
+    "frontend/src/pages/RecipeEditorPage.tsx",
+    "frontend/src/pages/RecipesBrowsePage.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}
