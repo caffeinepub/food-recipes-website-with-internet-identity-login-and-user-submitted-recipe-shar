@@ -26,10 +26,10 @@ export default function RecipesBrowsePage() {
         <div className="container py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Discover Delicious Recipes
+              All Recipes
             </h1>
             <p className="text-lg text-muted-foreground">
-              Explore a world of culinary delights shared by our community of home cooks and food enthusiasts.
+              Browse our complete collection of recipes from the community.
             </p>
           </div>
         </div>

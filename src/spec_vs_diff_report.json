@@ -1,92 +1,88 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T03:23:27.162Z",
-  "summary": "Core recipe browsing, detail, create/edit/delete flows and Internet Identity-based login UI are present, along with a warm theme. However, stable persistence across upgrades is not evidenced, the signed-in identifier is not displayed, and the required generated image assets/hero banner usage are not fully evidenced. Several unrequested features were added (user profiles, admin-token-based access control init, and a branded footer link).",
+  "generatedAt": "2026-02-11T04:30:53.743Z",
+  "summary": "Diff implements a new Home page at '/' with a recent-recipes section and navigation to '/recipes', adds schema/migration support for recipe photo/likes/comments, and updates frontend components to display a photo thumbnail and like counts. However, several acceptance criteria are either not evidenced in the backend diff (recent feed query + filtering, comments/likes methods and auth enforcement) or are only partially implemented (photos are single-image only, no clear backend upload limits, and photo removal flow appears unsupported).",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
-      "reason": "Login/logout button exists, but no UI element in the shown diff displays the user's Principal/identifier or an explicit signed-in indicator beyond showing a Logout button.",
+      "id": "REQ-11",
+      "requirement": "Backend exposes a query method that returns recipes sorted by createdAt descending (newest first), with optional exclude-own filtering when authenticated; unauthenticated feed should not exclude by owner.",
+      "reason": "Frontend calls actor.getRecentRecipes(excludeOwn), but the backend implementation of getRecentRecipes is not shown in the provided backend/main.mo diff (truncated). Also, HomePage always requests excludeOwn=true regardless of authentication, which conflicts with the AC for unauthenticated users unless backend overrides it (not evidenced).",
       "evidence": [
-        "frontend/src/components/auth/LoginButton.tsx",
-        "frontend/src/components/layout/AppHeader.tsx"
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "backend/main.mo (truncated)"
       ]
     },
     {
-      "id": "REQ-4",
-      "requirement": "Persist recipe data in the Motoko canister so that recipes remain available after page refresh and canister upgrades (using stable storage patterns).",
-      "reason": "Backend shows in-memory vars/maps for recipes and profiles (e.g., `var nextRecipeId` and `let recipes = Map.empty...`) but the diff snippet does not show any stable variables or `preupgrade`/`postupgrade` logic to preserve state across upgrades.",
+      "id": "REQ-12",
+      "requirement": "Recipe comments: visitors can read comments on recipe detail; authenticated users can add comments without full refresh; backend must enforce auth; comment records include recipeId, author principal, comment text, createdAt timestamp.",
+      "reason": "Backend/main.mo shows Comment type and Recipe has comments, but no diff evidence of backend methods for listing/adding comments (e.g., addComment / getComments) or auth enforcement for comment creation. Frontend references useAddComment, but its implementation is not visible in the truncated mutation file. Comment field is named timestamp rather than createdAt; may be acceptable but not explicitly evidenced as meeting the AC naming/semantics.",
       "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (truncated)",
+        "backend/migration.mo",
+        "frontend/src/pages/RecipeDetailPage.tsx",
+        "frontend/src/hooks/useRecipeMutations.ts (truncated)"
       ]
     },
     {
-      "id": "REQ-6",
-      "requirement": "Add generated static image assets under frontend/public/assets/generated (logo, hero banner, and icons set) and render at least the logo in the header and the hero/banner on the home page.",
-      "reason": "The header references the logo path, but the diff summary does not show any added files under `frontend/public/assets/generated`, and the home page uses a CSS gradient hero section without rendering the required hero banner image. The icons set is also not referenced.",
+      "id": "REQ-13",
+      "requirement": "Recipe likes: visitors see like count; authenticated users can like/unlike; signed-out users cannot like; backend prevents multiple likes per user (idempotent).",
+      "reason": "Frontend includes hooks calling like/unlike/hasUserLikedRecipe and RecipeCard displays recipe.likes.length, but the backend endpoints (likeRecipe, unlikeRecipe, hasUserLikedRecipe) and the idempotency guarantee are not shown in backend/main.mo diff (truncated). Also, the signed-out UI restriction (disabled button/prompt) is not evidenced because the like button rendering is in a truncated portion of RecipeDetailPage.",
       "evidence": [
-        "frontend/src/components/layout/AppHeader.tsx",
-        "frontend/src/pages/RecipesBrowsePage.tsx",
-        "frontend/src/index.css"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useRecipeMutations.ts (truncated)",
+        "frontend/src/components/recipes/RecipeCard.tsx",
+        "frontend/src/pages/RecipeDetailPage.tsx (truncated)",
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "requirement": "Allow authors to attach food photos (at least one; potentially multiple) during create/edit; store images on canister with explicit size/type limits and reject over-limit; display photos on detail and listing thumbnails; only owner can add/remove/replace photos.",
+      "reason": "Implementation appears to support only a single optional photo (Recipe.photo : ?ExternalBlob) rather than \"photo(s)\"/multiple images. Backend-side explicit limits and rejection logic are not evidenced (only frontend validates type and 5MB). Photo removal is likely not supported in edit flow: RecipeForm has handleRemovePhoto, but RecipeEditorPage update logic sends the existing recipe.photo when no new file is provided, preventing removal. Ownership checks for update are partially evidenced (backend updateRecipe checks owner), but add/remove/replace semantics are incomplete.",
+      "evidence": [
+        "backend/main.mo (truncated)",
+        "backend/migration.mo",
+        "frontend/src/components/recipes/RecipeForm.tsx (truncated)",
+        "frontend/src/pages/RecipeEditorPage.tsx (truncated)",
+        "frontend/src/components/recipes/RecipeCard.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "User profile management (save/get profile) and a mandatory name capture dialog after login.",
-      "reason": "BuildRequest focuses on recipe sharing and Internet Identity auth; it does not request user profiles or a profile setup flow.",
+      "description": "User profile management APIs and a ProfileSetupDialog flow (prompting for user name) included on Home/Browse pages.",
+      "reason": "Not requested by REQ-10 through REQ-14; these changes add additional auth-gated profile functionality beyond the specified home/feed/comments/likes/photos scope.",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/components/auth/ProfileSetupDialog.tsx",
-        "frontend/src/pages/RecipesBrowsePage.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/hooks/useRecipeMutations.ts"
+        "backend/main.mo (truncated)",
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/pages/RecipesBrowsePage.tsx"
       ]
     },
     {
-      "description": "Admin-token/secret-based access control initialization via URL parameter (`caffeineAdminToken`) and custom authorization mixins.",
-      "reason": "BuildRequest requires Internet Identity as the only authentication method and does not request an admin token mechanism or secret initialization path.",
+      "description": "Theme/palette and global styling changes (warm food-themed Tailwind/CSS tokens) and footer attribution link changes.",
+      "reason": "Not part of REQ-10 to REQ-14; appears to be additional UI/theming work beyond the requested functional changes.",
       "evidence": [
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/utils/urlParams.ts",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Footer with external attribution link to caffeine.ai.",
-      "reason": "Not requested in requirements and introduces additional branding/navigation content.",
-      "evidence": [
-        "frontend/src/components/layout/AppFooter.tsx"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.72,
+  "confidence": 0.66,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
     "frontend/src/App.tsx",
-    "frontend/src/components/auth/LoginButton.tsx",
-    "frontend/src/components/auth/ProfileSetupDialog.tsx",
-    "frontend/src/components/layout/AppFooter.tsx",
     "frontend/src/components/layout/AppHeader.tsx",
-    "frontend/src/components/layout/AppLayout.tsx",
     "frontend/src/components/recipes/RecipeCard.tsx",
     "frontend/src/components/recipes/RecipeForm.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/hooks/useRecipeMutations.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
+    "frontend/src/pages/HomePage.tsx",
     "frontend/src/pages/RecipeDetailPage.tsx",
     "frontend/src/pages/RecipeEditorPage.tsx",
     "frontend/src/pages/RecipesBrowsePage.tsx",
-    "frontend/src/utils/urlParams.ts",
-    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }

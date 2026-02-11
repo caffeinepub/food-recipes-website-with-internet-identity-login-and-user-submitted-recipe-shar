@@ -1,11 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "Website for food recipes with user accounts and user-submitted recipe sharing.",
-  "architectural_notes": [],
-  "known_issues": [],
+  "projectStateVersion": 9,
+  "summary": "Recipe-sharing web app with Internet Identity accounts, public browsing, user-submitted recipes, plus a dedicated home page/feed, comments, likes, and recipe photo uploads.",
+  "architectural_notes": [
+    "Authentication is based on Internet Identity (no traditional email/password accounts)."
+  ],
+  "known_issues": [
+    "Email login and email verification were requested but are currently not supported/available in this environment/account."
+  ],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Warm minimal 'recipe book + spoon' logo in flat vector style (recipe-logo.dim_512x512.png)\n- Soft textured hero banner with food-themed abstract shapes (recipe-hero.dim_1600x600.png)\n- Set of 6 minimal monochrome food icons (plate, chef hat, whisk, bowl, leaf, timer) on transparent background (food-icons-set.dim_1024x1024.png)",
   "existing_features": [
     {
       "id": "feature-implement-authentication-using-internet-identity-so-users-can-sign-in-and-sign-out-and-the-ui-reflects-the-current-auth-state-signed-out-vs-signed-in",
@@ -46,6 +49,62 @@
         "REQ-6"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-an-authenticated-monetize-page-in-the-frontend-where-a-signed-in-user-can-manage-their-monetization-settings-edit-a-list-of-support-links-label-url-and-manage-product-listings-create-edit-delete-fields-include-title-description-price-text-and-external-url-add-navigation-entry-points-so-authenticated-users-can-reach-this-page-from-the-existing-header-ui",
+      "title": "Add an authenticated “Monetize” page in the frontend where a signed-in user can manage their monetization settings: edit a list of support links (label + URL) and manage product listings (create/edit/delete; fields include title, description, price text, and external URL). Add navigation entry points so authenticated users can reach this page from the existing header UI.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-surface-monetization-information-on-public-recipe-viewing-on-the-recipe-detail-page-display-the-recipe-author-s-support-links-and-product-listings-if-any-with-each-item-linking-out-to-its-configured-external-url-the-display-must-be-read-only-for-visitors-and-for-non-owners",
+      "title": "Surface monetization information on public recipe viewing: on the recipe detail page, display the recipe author’s support links and product listings (if any), with each item linking out to its configured external URL. The display must be read-only for visitors and for non-owners.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dedicated-home-page-that-is-the-main-landing-page-and-provides-access-to-a-new-recipes-from-other-users-feed",
+      "title": "Add a dedicated Home page that is the main landing page and provides access to a 'New recipes from other users' feed.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-backend-support-and-frontend-querying-for-a-recent-recipes-feed-suitable-for-the-home-page-ordered-by-creation-time-newest-first-and-optionally-filterable-to-exclude-recipes-authored-by-the-caller-when-the-caller-is-authenticated",
+      "title": "Implement backend support and frontend querying for a 'recent recipes' feed suitable for the Home page, ordered by creation time (newest first) and optionally filterable to exclude recipes authored by the caller when the caller is authenticated.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-recipe-comments-visitors-can-read-comments-on-a-recipe-detail-page-and-authenticated-users-can-add-new-comments",
+      "title": "Add recipe comments: visitors can read comments on a recipe detail page, and authenticated users can add new comments.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-recipe-likes-visitors-can-see-a-recipe-s-like-count-and-authenticated-users-can-like-unlike-a-recipe-prevent-multiple-likes-by-the-same-user",
+      "title": "Add recipe likes: visitors can see a recipe's like count, and authenticated users can like/unlike a recipe. Prevent multiple likes by the same user.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-allow-authors-to-attach-food-photos-to-their-own-recipes-during-creation-editing-store-the-images-on-the-canister-with-reasonable-size-type-limits-and-display-the-photos-on-recipe-detail-and-in-recipe-listings-thumbnail-preview",
+      "title": "Allow authors to attach food photos to their own recipes during creation/editing, store the images on the canister with reasonable size/type limits, and display the photos on recipe detail and in recipe listings (thumbnail/preview).",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -73,6 +132,56 @@
       "reqIds": [
         "REQ-4"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add a user account/profile page to store and display user information (e.g., display name, bio, avatar) alongside Internet Identity login.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add monetization features to the recipe website (e.g., ads and/or paid content/products) so the owner can earn from the site.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Extend the backend data model and canister API to support per-user monetization information tied to Internet Identity, including: (1) user-managed external support links (e.g., “Buy me a coffee”, affiliate/store link) and (2) user-managed product listings (title, description, price text, and an external checkout URL). Ensure only the owning user (caller) can create/update/delete their own monetization data, and unauthenticated/public browsing can read monetization data needed for public display on recipe pages (by recipe owner principal).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Add a Home page that serves as the main landing experience for the recipe app.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Show a 'new recipes from other users' feed/listing (recently published recipes) accessible from the Home page.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Add comments on recipes (users can post comments; visitors can read them).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add likes/favorites for recipes (users can like; show like count on recipes).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Allow users to add pictures of food to their own recipes (image upload/attach to recipe and display on recipe detail).",
+      "reqIds": [],
       "status": "pending"
     }
   ],

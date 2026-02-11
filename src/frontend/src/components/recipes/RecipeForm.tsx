@@ -5,18 +5,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, X, Loader2 } from 'lucide-react';
+import { Plus, X, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface RecipeFormData {
   title: string;
   description: string;
   ingredients: Ingredient[];
   steps: string[];
+  photo?: any;
 }
 
 interface RecipeFormProps {
   initialData?: RecipeFormData;
-  onSubmit: (data: RecipeFormData) => void;
+  onSubmit: (data: RecipeFormData & { photo?: File | null }) => void;
   isSubmitting: boolean;
   submitLabel: string;
 }
@@ -33,6 +34,9 @@ export default function RecipeForm({
     initialData?.ingredients || [{ name: '', amount: '' }]
   );
   const [steps, setSteps] = useState<string[]>(initialData?.steps || ['']);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [existingPhoto, setExistingPhoto] = useState<any>(initialData?.photo || null);
 
   useEffect(() => {
     if (initialData) {
@@ -40,8 +44,41 @@ export default function RecipeForm({
       setDescription(initialData.description);
       setIngredients(initialData.ingredients.length > 0 ? initialData.ingredients : [{ name: '', amount: '' }]);
       setSteps(initialData.steps.length > 0 ? initialData.steps : ['']);
+      setExistingPhoto(initialData.photo || null);
     }
   }, [initialData]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      setPhotoFile(file);
+      setExistingPhoto(null);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setExistingPhoto(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +91,7 @@ export default function RecipeForm({
         description: description.trim(),
         ingredients: validIngredients,
         steps: validSteps,
+        photo: photoFile,
       });
     }
   };
@@ -86,6 +124,8 @@ export default function RecipeForm({
     setSteps(updated);
   };
 
+  const displayPhoto = photoPreview || (existingPhoto ? existingPhoto.getDirectURL() : null);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
@@ -109,6 +149,48 @@ export default function RecipeForm({
           rows={3}
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="photo">Recipe Photo</Label>
+        {displayPhoto ? (
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
+            <img
+              src={displayPhoto}
+              alt="Recipe preview"
+              className="w-full h-full object-cover"
+            />
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={handleRemovePhoto}
+              className="absolute top-2 right-2"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Remove
+            </Button>
+          </div>
+        ) : (
+          <div className="border-2 border-dashed rounded-lg p-8 text-center">
+            <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+            <Label
+              htmlFor="photo-upload"
+              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
+            >
+              <span className="text-primary font-medium">Click to upload</span> or drag and drop
+              <br />
+              PNG, JPG, GIF up to 5MB
+            </Label>
+            <Input
+              id="photo-upload"
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">

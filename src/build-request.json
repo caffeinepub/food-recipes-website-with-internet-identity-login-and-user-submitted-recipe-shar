@@ -1,137 +1,118 @@
 {
   "kind": "build_request",
-  "title": "Food Recipes Website with Internet Identity Login and User-Submitted Recipe Sharing",
+  "title": "Add Home page, recent recipes feed, comments, likes, and recipe photos",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Implement authentication using Internet Identity so users can sign in and sign out, and the UI reflects the current auth state (signed out vs signed in).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Aslo add the function of login"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A signed-out user can initiate Internet Identity login and becomes signed in after completing it.",
-        "A signed-in user can sign out and returns to the signed-out state.",
-        "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
-        "Backend methods that modify user-owned data reject anonymous callers (not authenticated)."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Create a public recipes experience where any visitor can browse a list of published recipes and open a recipe detail page that shows full recipe content.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Create  an website for food recipes"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The home/browse view loads and displays a list of published recipes from the backend.",
-        "Selecting a recipe opens a detail view that shows at minimum: title, description, ingredients, and steps.",
-        "Unauthenticated users can browse and view published recipes without logging in.",
-        "If there are no recipes yet, the UI shows an empty state message in English (e.g., 'No recipes yet')."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Allow authenticated users to create and publish their own recipes via a 'New Recipe' form, and ensure that only the recipe owner can edit or delete their own recipes.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "sharing their own recipes by users"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A signed-in user can open a 'New Recipe' form and submit a recipe successfully.",
-        "Newly published recipes appear in the public browse list and are viewable by others.",
-        "A signed-in user can edit and delete only recipes they created; attempts to edit/delete others' recipes are blocked in the UI and rejected by the backend.",
-        "The 'New Recipe' and edit actions are not available to signed-out users (or they are prompted to sign in)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Persist recipe data in the Motoko canister so that recipes remain available after page refresh and canister upgrades (using stable storage patterns).",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Create  an website for food recipes"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After creating recipes, refreshing the browser still shows the same recipes.",
-        "State is stored in a stable structure suitable for upgrades (no loss of recipes when upgrading the canister in development workflow)."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Create a coherent, distinct visual theme and apply it consistently across the site (typography, colors, spacing, and components) suitable for a food/recipe app; avoid a blue/purple primary palette.",
+      "id": "REQ-10",
+      "text": "Add a dedicated Home page that is the main landing page and provides access to a 'New recipes from other users' feed.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "Create  an website for food recipes"
+          "Create new app Which work as same as this website but having home page , new recipes from other user"
         ]
       },
       "acceptanceCriteria": [
-        "All pages share consistent layout, spacing, and component styling.",
-        "Primary UI colors are not blue/purple-dominant.",
-        "User-facing text is in English across navigation, buttons, empty states, and form labels."
+        "Visiting the root route ('/') shows a Home page (not the current browse grid view).",
+        "The Home page includes a section labeled in English that shows a list of recent recipes.",
+        "From the Home page, users can navigate to a full browse/listing page of recipes."
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Add generated static image assets to support the UI theme and render them from the frontend as static files under frontend/public/assets/generated.",
-      "target": "frontend",
+      "id": "REQ-11",
+      "text": "Implement backend support and frontend querying for a 'recent recipes' feed suitable for the Home page, ordered by creation time (newest first) and optionally filterable to exclude recipes authored by the caller when the caller is authenticated.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "Create  an website for food recipes"
+          "new recipes from other user"
         ]
       },
       "acceptanceCriteria": [
-        "The generated images listed in imageRequirements.required exist under frontend/public/assets/generated.",
-        "At least the logo is visible in the app header/navigation and the hero/banner image is visible on the home page.",
-        "Images are served as static frontend assets (not fetched from the backend)."
+        "Backend exposes a query method that returns recipes sorted by createdAt descending (newest first).",
+        "When the caller is authenticated, the frontend can request a 'recent recipes from other users' feed that excludes the caller's own recipes; when unauthenticated, the feed shows recent recipes without filtering by owner.",
+        "The Home page uses this feed and shows the newest recipes first."
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Add recipe comments: visitors can read comments on a recipe detail page, and authenticated users can add new comments.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "add custom recipes, coments"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Recipe detail page shows a comments section that loads and renders existing comments for the recipe for any visitor (including signed-out users).",
+        "Authenticated users can submit a new comment; after submission the new comment appears in the list without a full page refresh.",
+        "Backend enforces that only authenticated users can create comments.",
+        "Comment records include at least: recipeId, author principal, comment text, and createdAt timestamp."
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Add recipe likes: visitors can see a recipe's like count, and authenticated users can like/unlike a recipe. Prevent multiple likes by the same user.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "and like to recepie"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Recipe detail page displays a like button and a like count.",
+        "If the user is signed in, clicking the like button toggles like/unlike for that user and updates the displayed count accordingly.",
+        "If the user is signed out, the UI does not allow liking (e.g., disabled button or prompts to log in).",
+        "Backend guarantees a user can only contribute at most one like per recipe (idempotent like).",
+        "Recipe cards/listings can display the like count (at least on the recipe detail page it must be visible)."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Allow authors to attach food photos to their own recipes during creation/editing, store the images on the canister with reasonable size/type limits, and display the photos on recipe detail and in recipe listings (thumbnail/preview).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "with adding pictures of food in own recipes"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Recipe create/edit form supports selecting at least one image file and submitting it with the recipe.",
+        "Backend stores recipe image data in a way that survives page refresh and canister upgrades, with explicit limits (e.g., max file size and allowed mime types) and rejects uploads that exceed limits.",
+        "Recipe detail page renders the attached photo(s) for the recipe.",
+        "Recipe listing cards show a thumbnail/preview when an image exists for the recipe.",
+        "Only the recipe owner can add/remove/replace photos for their own recipes."
       ]
     }
   ],
   "constraints": [
-    "Use Internet Identity as the only authentication method.",
-    "Backend must remain a single Motoko actor (no additional backend services).",
-    "Do not modify files in frontend/src/components/ui or other immutable paths; compose them instead.",
-    "Use English for all user-facing text."
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo.",
+    "Frontend must not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or any files under frontend/src/components/ui (compose instead).",
+    "User-facing text must be in English.",
+    "If any stable-state schema changes are required to support comments/likes/photos, add a conditional backend migration following the project’s migration policy."
   ],
   "nonGoals": [
-    "Payments, subscriptions, or premium content.",
-    "Third-party OAuth (Google/Facebook/GitHub/Auth0).",
-    "Real-time chat, comments, likes, or notifications.",
-    "External database integrations."
+    "Implementing third-party authentication providers (only Internet Identity is supported).",
+    "Real-time comment updates via websockets or push notifications.",
+    "External image hosting/CDN integration; recipe photos must be stored within the Internet Computer canister constraints.",
+    "Adding monetization features beyond what already exists."
   ],
   "imageRequirements": {
-    "required": [
-      "Warm minimal 'recipe book + spoon' logo in flat vector style (recipe-logo.dim_512x512.png)",
-      "Soft textured hero banner with food-themed abstract shapes (recipe-hero.dim_1600x600.png)",
-      "Set of 6 minimal monochrome food icons (plate, chef hat, whisk, bowl, leaf, timer) on transparent background (food-icons-set.dim_1024x1024.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

@@ -8,6 +8,19 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const RecipeId = IDL.Nat;
+export const Time = IDL.Int;
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -17,43 +30,122 @@ export const Ingredient = IDL.Record({
   'name' : IDL.Text,
   'amount' : IDL.Text,
 });
-export const RecipeId = IDL.Nat;
-export const Time = IDL.Int;
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Comment = IDL.Record({
+  'content' : IDL.Text,
+  'author' : IDL.Principal,
+  'timestamp' : Time,
+});
 export const Recipe = IDL.Record({
   'id' : RecipeId,
   'title' : IDL.Text,
   'owner' : IDL.Principal,
   'createdAt' : Time,
   'description' : IDL.Text,
+  'likes' : IDL.Vec(IDL.Principal),
   'updatedAt' : Time,
   'steps' : IDL.Vec(IDL.Text),
+  'comments' : IDL.Vec(Comment),
+  'photo' : IDL.Opt(ExternalBlob),
   'ingredients' : IDL.Vec(Ingredient),
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const Product = IDL.Record({
+  'title' : IDL.Text,
+  'description' : IDL.Text,
+  'priceDisplay' : IDL.Text,
+  'checkoutUrl' : IDL.Text,
+});
+export const ExternalSupportLink = IDL.Record({
+  'url' : IDL.Text,
+  'displayName' : IDL.Text,
+  'description' : IDL.Opt(IDL.Text),
+});
+export const Storefront = IDL.Record({
+  'supportLinks' : IDL.Vec(ExternalSupportLink),
+  'products' : IDL.Vec(Product),
+});
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addComment' : IDL.Func([RecipeId, IDL.Text, Time], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createRecipe' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Vec(Ingredient), IDL.Vec(IDL.Text)],
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Vec(Ingredient),
+        IDL.Vec(IDL.Text),
+        IDL.Opt(ExternalBlob),
+      ],
       [RecipeId],
       [],
     ),
   'deleteRecipe' : IDL.Func([RecipeId], [], []),
+  'deleteStorefront' : IDL.Func([], [], []),
   'getAllRecipes' : IDL.Func([], [IDL.Vec(Recipe)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getRecentRecipes' : IDL.Func([IDL.Bool], [IDL.Vec(Recipe)], ['query']),
   'getRecipe' : IDL.Func([RecipeId], [Recipe], ['query']),
+  'getUserProducts' : IDL.Func([IDL.Principal], [IDL.Vec(Product)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
   'getUserRecipes' : IDL.Func([IDL.Principal], [IDL.Vec(Recipe)], ['query']),
+  'getUserStorefront' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(Storefront)],
+      ['query'],
+    ),
+  'getUserSupportLinks' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ExternalSupportLink)],
+      ['query'],
+    ),
+  'hasUserLikedRecipe' : IDL.Func([RecipeId], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'likeRecipe' : IDL.Func([RecipeId], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveOrUpdateStorefront' : IDL.Func([Storefront], [], []),
+  'unlikeRecipe' : IDL.Func([RecipeId], [], []),
   'updateRecipe' : IDL.Func(
-      [RecipeId, IDL.Text, IDL.Text, IDL.Vec(Ingredient), IDL.Vec(IDL.Text)],
+      [
+        RecipeId,
+        IDL.Text,
+        IDL.Text,
+        IDL.Vec(Ingredient),
+        IDL.Vec(IDL.Text),
+        IDL.Opt(ExternalBlob),
+      ],
       [],
       [],
     ),
@@ -62,49 +154,145 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const RecipeId = IDL.Nat;
+  const Time = IDL.Int;
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
   const Ingredient = IDL.Record({ 'name' : IDL.Text, 'amount' : IDL.Text });
-  const RecipeId = IDL.Nat;
-  const Time = IDL.Int;
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Comment = IDL.Record({
+    'content' : IDL.Text,
+    'author' : IDL.Principal,
+    'timestamp' : Time,
+  });
   const Recipe = IDL.Record({
     'id' : RecipeId,
     'title' : IDL.Text,
     'owner' : IDL.Principal,
     'createdAt' : Time,
     'description' : IDL.Text,
+    'likes' : IDL.Vec(IDL.Principal),
     'updatedAt' : Time,
     'steps' : IDL.Vec(IDL.Text),
+    'comments' : IDL.Vec(Comment),
+    'photo' : IDL.Opt(ExternalBlob),
     'ingredients' : IDL.Vec(Ingredient),
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const Product = IDL.Record({
+    'title' : IDL.Text,
+    'description' : IDL.Text,
+    'priceDisplay' : IDL.Text,
+    'checkoutUrl' : IDL.Text,
+  });
+  const ExternalSupportLink = IDL.Record({
+    'url' : IDL.Text,
+    'displayName' : IDL.Text,
+    'description' : IDL.Opt(IDL.Text),
+  });
+  const Storefront = IDL.Record({
+    'supportLinks' : IDL.Vec(ExternalSupportLink),
+    'products' : IDL.Vec(Product),
+  });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addComment' : IDL.Func([RecipeId, IDL.Text, Time], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createRecipe' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Vec(Ingredient), IDL.Vec(IDL.Text)],
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Vec(Ingredient),
+          IDL.Vec(IDL.Text),
+          IDL.Opt(ExternalBlob),
+        ],
         [RecipeId],
         [],
       ),
     'deleteRecipe' : IDL.Func([RecipeId], [], []),
+    'deleteStorefront' : IDL.Func([], [], []),
     'getAllRecipes' : IDL.Func([], [IDL.Vec(Recipe)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getRecentRecipes' : IDL.Func([IDL.Bool], [IDL.Vec(Recipe)], ['query']),
     'getRecipe' : IDL.Func([RecipeId], [Recipe], ['query']),
+    'getUserProducts' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(Product)],
+        ['query'],
+      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
     'getUserRecipes' : IDL.Func([IDL.Principal], [IDL.Vec(Recipe)], ['query']),
+    'getUserStorefront' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(Storefront)],
+        ['query'],
+      ),
+    'getUserSupportLinks' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ExternalSupportLink)],
+        ['query'],
+      ),
+    'hasUserLikedRecipe' : IDL.Func([RecipeId], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'likeRecipe' : IDL.Func([RecipeId], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveOrUpdateStorefront' : IDL.Func([Storefront], [], []),
+    'unlikeRecipe' : IDL.Func([RecipeId], [], []),
     'updateRecipe' : IDL.Func(
-        [RecipeId, IDL.Text, IDL.Text, IDL.Vec(Ingredient), IDL.Vec(IDL.Text)],
+        [
+          RecipeId,
+          IDL.Text,
+          IDL.Text,
+          IDL.Vec(Ingredient),
+          IDL.Vec(IDL.Text),
+          IDL.Opt(ExternalBlob),
+        ],
         [],
         [],
       ),

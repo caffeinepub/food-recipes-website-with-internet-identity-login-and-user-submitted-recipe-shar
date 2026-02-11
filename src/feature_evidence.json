@@ -2,34 +2,14 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-authentication-using-internet-identity-so-users-can-sign-in-and-sign-out-and-the-ui-reflects-the-current-auth-state-signed-out-vs-signed-in",
-      "featureTitle": "Implement authentication using Internet Identity so users can sign in and sign out, and the UI reflects the current auth state (signed out vs signed in).",
+      "featureId": "feature-add-a-dedicated-home-page-that-is-the-main-landing-page-and-provides-access-to-a-new-recipes-from-other-users-feed",
+      "featureTitle": "Add a dedicated Home page that is the main landing page and provides access to a 'New recipes from other users' feed.",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/auth/LoginButton.tsx",
-        "frontend/src/components/auth/ProfileSetupDialog.tsx",
-        "frontend/src/main.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-public-recipes-experience-where-any-visitor-can-browse-a-list-of-published-recipes-and-open-a-recipe-detail-page-that-shows-full-recipe-content",
-      "featureTitle": "Create a public recipes experience where any visitor can browse a list of published recipes and open a recipe detail page that shows full recipe content.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/recipes/RecipeCard.tsx",
+        "frontend/src/components/layout/AppHeader.tsx",
+        "frontend/src/pages/HomePage.tsx",
         "frontend/src/pages/RecipeDetailPage.tsx",
+        "frontend/src/pages/RecipeEditorPage.tsx",
         "frontend/src/pages/RecipesBrowsePage.tsx"
       ],
       "components": [
@@ -38,18 +18,85 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-10"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-allow-authenticated-users-to-create-and-publish-their-own-recipes-via-a-new-recipe-form-and-ensure-that-only-the-recipe-owner-can-edit-or-delete-their-own-recipes",
-      "featureTitle": "Allow authenticated users to create and publish their own recipes via a 'New Recipe' form, and ensure that only the recipe owner can edit or delete their own recipes.",
+      "featureId": "feature-implement-backend-support-and-frontend-querying-for-a-recent-recipes-feed-suitable-for-the-home-page-ordered-by-creation-time-newest-first-and-optionally-filterable-to-exclude-recipes-authored-by-the-caller-when-the-caller-is-authenticated",
+      "featureTitle": "Implement backend support and frontend querying for a 'recent recipes' feed suitable for the Home page, ordered by creation time (newest first) and optionally filterable to exclude recipes authored by the caller when the caller is authenticated.",
       "files": [
-        "frontend/src/App.tsx",
+        "frontend/src/components/recipes/RecipeCard.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-recipe-comments-visitors-can-read-comments-on-a-recipe-detail-page-and-authenticated-users-can-add-new-comments",
+      "featureTitle": "Add recipe comments: visitors can read comments on a recipe detail page, and authenticated users can add new comments.",
+      "files": [
+        "frontend/src/hooks/useRecipeMutations.ts",
+        "frontend/src/pages/RecipeDetailPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-recipe-likes-visitors-can-see-a-recipe-s-like-count-and-authenticated-users-can-like-unlike-a-recipe-prevent-multiple-likes-by-the-same-user",
+      "featureTitle": "Add recipe likes: visitors can see a recipe's like count, and authenticated users can like/unlike a recipe. Prevent multiple likes by the same user.",
+      "files": [
+        "frontend/src/components/recipes/RecipeCard.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useRecipeMutations.ts",
+        "frontend/src/pages/RecipeDetailPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-allow-authors-to-attach-food-photos-to-their-own-recipes-during-creation-editing-store-the-images-on-the-canister-with-reasonable-size-type-limits-and-display-the-photos-on-recipe-detail-and-in-recipe-listings-thumbnail-preview",
+      "featureTitle": "Allow authors to attach food photos to their own recipes during creation/editing, store the images on the canister with reasonable size/type limits, and display the photos on recipe detail and in recipe listings (thumbnail/preview).",
+      "files": [
+        "frontend/src/components/recipes/RecipeCard.tsx",
         "frontend/src/components/recipes/RecipeForm.tsx",
         "frontend/src/hooks/useRecipeMutations.ts",
         "frontend/src/pages/RecipeDetailPage.tsx",
@@ -61,53 +108,11 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-coherent-distinct-visual-theme-and-apply-it-consistently-across-the-site-typography-colors-spacing-and-components-suitable-for-a-food-recipe-app-avoid-a-blue-purple-primary-palette",
-      "featureTitle": "Create a coherent, distinct visual theme and apply it consistently across the site (typography, colors, spacing, and components) suitable for a food/recipe app; avoid a blue/purple primary palette.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/AppLayout.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-generated-static-image-assets-to-support-the-ui-theme-and-render-them-from-the-frontend-as-static-files-under-frontend-public-assets-generated",
-      "featureTitle": "Add generated static image assets to support the UI theme and render them from the frontend as static files under frontend/public/assets/generated.",
-      "files": [
-        "frontend/src/components/layout/AppHeader.tsx",
-        "frontend/src/components/layout/AppLayout.tsx",
-        "frontend/src/pages/RecipesBrowsePage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
+        "REQ-14"
       ],
       "confidence": "high"
     }

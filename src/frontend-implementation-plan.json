@@ -1,193 +1,165 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Food Recipes Website (Frontend) with Internet Identity Auth and Recipe Sharing",
+  "title": "Home page + recent feed, comments, likes, and recipe photos (frontend)",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Add Internet Identity sign in/out UI with auth-aware layout and profile setup, reflecting current auth state.",
+      "id": "REQ-10",
+      "summary": "Add a dedicated Home page at '/' with a 'New recipes from other users' section and navigation to the full recipes browse page.",
       "acceptanceCriteria": [
-        "A signed-out user can initiate Internet Identity login and becomes signed in after completing it.",
-        "A signed-in user can sign out and returns to the signed-out state.",
-        "The frontend displays the signed-in user's identifier (e.g., Principal) or a clear 'Signed in' indicator.",
-        "Backend methods that modify user-owned data reject anonymous callers (not authenticated)."
+        "Visiting the root route ('/') shows a Home page (not the current browse grid view).",
+        "The Home page includes a section labeled in English that shows a list of recent recipes.",
+        "From the Home page, users can navigate to a full browse/listing page of recipes."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "create",
-          "description": "Create the app shell with header/navigation, a login/logout control, and route/view wiring for browse, recipe detail, and new/edit recipe flows. Use the selected authorization component’s frontend guidance to reflect auth state and clear cached app data on logout (with React Query). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "create",
-          "description": "Implement a login/logout button using the existing useInternetIdentity hook, and clear React Query cache on logout per the selected authorization component guidance. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/auth/ProfileSetupDialog.tsx",
-          "operation": "create",
-          "description": "Add a first-login profile setup dialog that prompts for a human-readable name and persists it via backend getCallerUserProfile/saveCallerUserProfile. Compose UI using shadcn-ui components (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
-          "operation": "create",
-          "description": "Create a React Query hook to load the current user profile via the actor (getCallerUserProfile), following the selected authorization component’s guidance to avoid modal flash by accurately reflecting actor dependency. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/main.tsx",
-          "operation": "modify",
-          "description": "Ensure the QueryClient is configured to support auth transitions cleanly (e.g., predictable caching/invalidations) and that the app root works with the auth-aware shell in App.tsx."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Provide public recipe browsing and recipe detail viewing without requiring login.",
-      "acceptanceCriteria": [
-        "The home/browse view loads and displays a list of published recipes from the backend.",
-        "Selecting a recipe opens a detail view that shows at minimum: title, description, ingredients, and steps.",
-        "Unauthenticated users can browse and view published recipes without logging in.",
-        "If there are no recipes yet, the UI shows an empty state message in English (e.g., 'No recipes yet')."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/RecipesBrowsePage.tsx",
-          "operation": "create",
-          "description": "Create the public browse view showing a hero/banner section and a list of recipes loaded from the backend (getAllRecipes), including an English empty state (e.g., 'No recipes yet')."
-        },
-        {
-          "path": "frontend/src/pages/RecipeDetailPage.tsx",
-          "operation": "create",
-          "description": "Create a recipe detail view that loads a recipe by id (getRecipe) and displays title, description, ingredients, and steps."
-        },
-        {
-          "path": "frontend/src/hooks/useRecipes.ts",
-          "operation": "create",
-          "description": "Add React Query hooks for fetching recipe lists and recipe details using the existing useActor hook (public browsing must work with anonymous actor)."
-        },
-        {
-          "path": "frontend/src/components/recipes/RecipeCard.tsx",
-          "operation": "create",
-          "description": "Create a reusable recipe card/list item component for the browse view (compose shadcn-ui primitives as needed; do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+          "description": "Create the Home page UI with an English-labeled 'New recipes from other users' section that renders a recent recipe list and includes a clear navigation control to the full browse/listing page."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wire RecipesBrowsePage as the default view and wire navigation to RecipeDetailPage (e.g., via a minimal router or in-app view state) so pages are not orphaned."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Enable authenticated users to create, edit, and delete only their own recipes, with UI gating and graceful authorization error handling.",
-      "acceptanceCriteria": [
-        "A signed-in user can open a 'New Recipe' form and submit a recipe successfully.",
-        "Newly published recipes appear in the public browse list and are viewable by others.",
-        "A signed-in user can edit and delete only recipes they created; attempts to edit/delete others' recipes are blocked in the UI and rejected by the backend.",
-        "The 'New Recipe' and edit actions are not available to signed-out users (or they are prompted to sign in)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/RecipeEditorPage.tsx",
-          "operation": "create",
-          "description": "Create a recipe editor page that supports both create and edit modes. Gate create/edit behind Internet Identity login (prompt signed-out users to sign in). Use ownership checks (recipe.owner vs current principal) to enable edit/delete controls only for the owner, following the selected authorization component guidance. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/recipes/RecipeForm.tsx",
-          "operation": "create",
-          "description": "Create a 'New Recipe' / 'Edit Recipe' form UI with English labels for title, description, ingredients, and steps; compose using shadcn-ui form inputs/buttons (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useRecipeMutations.ts",
-          "operation": "create",
-          "description": "Add React Query mutations for createRecipe, updateRecipe, and deleteRecipe. On success, invalidate/refetch recipe queries so new/updated recipes appear in the browse list and detail views. Handle authorization failures gracefully by surfacing an English error message."
-        },
-        {
-          "path": "frontend/src/components/feedback/AppToasts.tsx",
-          "operation": "create",
-          "description": "Add a lightweight feedback mechanism for success/error messages (compose shadcn-ui toast/alert primitives if available; do not modify immutable ui component files). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire navigation/actions to the RecipeEditorPage for 'New Recipe' and for editing from the recipe detail view; ensure these routes/views are registered and accessible only when appropriate."
-        },
-        {
-          "path": "frontend/src/pages/RecipeDetailPage.tsx",
-          "operation": "modify",
-          "description": "Add owner-only edit/delete actions on the detail page, with UI blocking for non-owners and signed-out users; connect to mutation hooks and show English confirmation/error states."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Apply a cohesive warm food/recipe theme (non blue/purple primary) with consistent layout, typography, spacing, and English copy.",
-      "acceptanceCriteria": [
-        "All pages share consistent layout, spacing, and component styling.",
-        "Primary UI colors are not blue/purple-dominant.",
-        "User-facing text is in English across navigation, buttons, empty states, and form labels."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "create",
-          "description": "Define global CSS variables/tailwind base layer for a warm palette (e.g., orange/amber/earth tones) and consistent typography/spacing, ensuring the primary palette is not blue/purple-dominant."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Adjust theme tokens/extended colors (via CSS variables mapping) as needed to support the warm recipe theme consistently across components."
-        },
-        {
-          "path": "frontend/src/components/layout/AppLayout.tsx",
-          "operation": "create",
-          "description": "Create a shared layout wrapper for consistent header, content container spacing, and page structure; compose shadcn-ui components where helpful (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wrap pages with AppLayout and ensure all navigation/buttons/empty states use English text and consistent styling."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Add and render generated static images (logo, hero banner, icon set) from frontend/public/assets/generated.",
-      "acceptanceCriteria": [
-        "The generated images listed in imageRequirements.required exist under frontend/public/assets/generated.",
-        "At least the logo is visible in the app header/navigation and the hero/banner image is visible on the home page.",
-        "Images are served as static frontend assets (not fetched from the backend)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/recipe-logo.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated static logo asset at frontend/public/assets/generated/recipe-logo.dim_512x512.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/recipe-hero.dim_1600x600.png",
-          "operation": "create",
-          "description": "Add the generated static hero banner asset at frontend/public/assets/generated/recipe-hero.dim_1600x600.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/food-icons-set.dim_1024x1024.png",
-          "operation": "create",
-          "description": "Add the generated static icon set asset at frontend/public/assets/generated/food-icons-set.dim_1024x1024.png."
+          "description": "Wire the new Home page to the root route ('/') and move the existing browse grid to a dedicated route (e.g., '/recipes') so '/' is the landing page."
         },
         {
           "path": "frontend/src/components/layout/AppHeader.tsx",
-          "operation": "create",
-          "description": "Create a header component that displays the logo image from frontend/public/assets/generated/recipe-logo.dim_512x512.png alongside navigation and auth controls. Compose shadcn-ui components as needed (do not modify immutable ui component files). Verify the component's usage instructions before implementing."
+          "operation": "modify",
+          "description": "Update header navigation to include Home ('/') and Browse Recipes (the new browse route) so users can reach the full listing from the Home page and header."
         },
         {
           "path": "frontend/src/pages/RecipesBrowsePage.tsx",
           "operation": "modify",
-          "description": "Render the hero/banner image from frontend/public/assets/generated/recipe-hero.dim_1600x600.png in the browse view hero section, and optionally incorporate the icon set frontend/public/assets/generated/food-icons-set.dim_1024x1024.png in supporting UI elements."
+          "description": "Adjust any copy/links that assume '/' is the browse page and ensure navigation targets the new browse route where appropriate."
         },
         {
-          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
           "operation": "modify",
-          "description": "Wire AppHeader into the shared layout so the logo is visible across the app."
+          "description": "Update 'Back to Recipes' navigation to point to the new browse route while keeping the Home page available at '/'."
+        },
+        {
+          "path": "frontend/src/pages/RecipeEditorPage.tsx",
+          "operation": "modify",
+          "description": "Update any 'Back' navigation and unauthorized redirects that currently send users to '/' so they correctly go to the browse route (while '/' remains the Home landing page)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Query and render a recent-recipes feed for the Home page (newest first) and support excluding the signed-in user's own recipes when authenticated.",
+      "acceptanceCriteria": [
+        "Backend exposes a query method that returns recipes sorted by createdAt descending (newest first).",
+        "When the caller is authenticated, the frontend can request a 'recent recipes from other users' feed that excludes the caller's own recipes; when unauthenticated, the feed shows recent recipes without filtering by owner.",
+        "The Home page uses this feed and shows the newest recipes first."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a React Query hook for the recent-recipes feed that calls the backend capability for recent recipes and supports an exclude-own flag derived from authentication state."
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Use the recent-recipes hook to render the Home page feed in newest-first order, and when authenticated request 'recent recipes from other users' by enabling the exclude-own option. Use the authorization component’s frontend guidance to determine authenticated state; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/recipes/RecipeCard.tsx",
+          "operation": "modify",
+          "description": "Ensure recipe cards used by the Home recent feed can display the minimal metadata needed for a 'recent recipes' list consistently with the browse listing (and remain clickable to the recipe detail page)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Display recipe comments on the recipe detail page for all visitors and allow authenticated users to add comments with optimistic UI refresh.",
+      "acceptanceCriteria": [
+        "Recipe detail page shows a comments section that loads and renders existing comments for the recipe for any visitor (including signed-out users).",
+        "Authenticated users can submit a new comment; after submission the new comment appears in the list without a full page refresh.",
+        "Backend enforces that only authenticated users can create comments.",
+        "Comment records include at least: recipeId, author principal, comment text, and createdAt timestamp."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useRecipeMutations.ts",
+          "operation": "modify",
+          "description": "Add a mutation hook to create a new comment for a recipe. After success, invalidate/refetch the recipe detail query so the new comment appears without a full page refresh. Use the authorization component’s frontend guidance to require login before allowing the mutation; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
+          "operation": "modify",
+          "description": "Add a Comments section that renders existing comments for visitors and shows an authenticated-only comment composer (signed-out users see a disabled composer or a login prompt). On submit, call the comment mutation and refresh the displayed comment list without navigating away. Use English user-facing text."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "Show like count and provide authenticated like/unlike toggling on the recipe detail page, while preventing likes for signed-out users.",
+      "acceptanceCriteria": [
+        "Recipe detail page displays a like button and a like count.",
+        "If the user is signed in, clicking the like button toggles like/unlike for that user and updates the displayed count accordingly.",
+        "If the user is signed out, the UI does not allow liking (e.g., disabled button or prompts to log in).",
+        "Backend guarantees a user can only contribute at most one like per recipe (idempotent like).",
+        "Recipe cards/listings can display the like count (at least on the recipe detail page it must be visible)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a query hook to determine whether the currently authenticated user has liked a given recipe (disabled when signed out), so the detail page can render the correct toggle state."
+        },
+        {
+          "path": "frontend/src/hooks/useRecipeMutations.ts",
+          "operation": "modify",
+          "description": "Add like and unlike mutation hooks. After success, invalidate/refetch the recipe detail query (and any recent/browse lists as needed) to keep counts and toggle state consistent. Use the authorization component’s frontend guidance to prevent signed-out users from triggering these mutations; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
+          "operation": "modify",
+          "description": "Render a like button and like count. When signed in, allow toggling like/unlike and update the UI after mutation; when signed out, disable the control or prompt to log in. Use English user-facing text and handle authorization failures gracefully."
+        },
+        {
+          "path": "frontend/src/components/recipes/RecipeCard.tsx",
+          "operation": "modify",
+          "description": "Optionally display like count on recipe cards used in browse/home feeds to improve consistency with the detail view."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Support selecting and submitting recipe photos during create/edit, and display stored photos on recipe detail and in listings as thumbnails/previews.",
+      "acceptanceCriteria": [
+        "Recipe create/edit form supports selecting at least one image file and submitting it with the recipe.",
+        "Backend stores recipe image data in a way that survives page refresh and canister upgrades, with explicit limits (e.g., max file size and allowed mime types) and rejects uploads that exceed limits.",
+        "Recipe detail page renders the attached photo(s) for the recipe.",
+        "Recipe listing cards show a thumbnail/preview when an image exists for the recipe.",
+        "Only the recipe owner can add/remove/replace photos for their own recipes."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/recipes/RecipeForm.tsx",
+          "operation": "modify",
+          "description": "Extend the recipe form to support selecting an image file and (in edit mode) replacing/removing the existing photo. Add client-side checks for reasonable file size and allowed image mime types before submit. Use the blob-storage component’s ExternalBlob representation on the frontend integration path; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecipeEditorPage.tsx",
+          "operation": "modify",
+          "description": "Plumb the form’s selected photo/removal intent into the submit flow for create/edit. Ensure edit-mode ownership gating continues to prevent non-owners from changing photos (UI-level enforcement)."
+        },
+        {
+          "path": "frontend/src/hooks/useRecipeMutations.ts",
+          "operation": "modify",
+          "description": "Update create/update recipe mutations to accept an optional photo selection and pass it using the blob-storage component’s ExternalBlob type when calling the backend capability. Ensure query invalidation refreshes listings and detail so updated photos appear. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecipeDetailPage.tsx",
+          "operation": "modify",
+          "description": "Render the recipe photo (when present) using the blob-storage component’s ExternalBlob direct URL capability for efficient display/caching. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/recipes/RecipeCard.tsx",
+          "operation": "modify",
+          "description": "Show a thumbnail/preview image on recipe cards when a photo exists, using the blob-storage component’s ExternalBlob direct URL. Verify the component's usage instructions before implementing."
         }
       ]
     }

@@ -10,41 +10,113 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Comment {
+  'content' : string,
+  'author' : Principal,
+  'timestamp' : Time,
+}
+export type ExternalBlob = Uint8Array;
+export interface ExternalSupportLink {
+  'url' : string,
+  'displayName' : string,
+  'description' : [] | [string],
+}
 export interface Ingredient { 'name' : string, 'amount' : string }
+export interface Product {
+  'title' : string,
+  'description' : string,
+  'priceDisplay' : string,
+  'checkoutUrl' : string,
+}
 export interface Recipe {
   'id' : RecipeId,
   'title' : string,
   'owner' : Principal,
   'createdAt' : Time,
   'description' : string,
+  'likes' : Array<Principal>,
   'updatedAt' : Time,
   'steps' : Array<string>,
+  'comments' : Array<Comment>,
+  'photo' : [] | [ExternalBlob],
   'ingredients' : Array<Ingredient>,
 }
 export type RecipeId = bigint;
+export interface Storefront {
+  'supportLinks' : Array<ExternalSupportLink>,
+  'products' : Array<Product>,
+}
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addComment' : ActorMethod<[RecipeId, string, Time], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createRecipe' : ActorMethod<
-    [string, string, Array<Ingredient>, Array<string>],
+    [string, string, Array<Ingredient>, Array<string>, [] | [ExternalBlob]],
     RecipeId
   >,
   'deleteRecipe' : ActorMethod<[RecipeId], undefined>,
+  'deleteStorefront' : ActorMethod<[], undefined>,
   'getAllRecipes' : ActorMethod<[], Array<Recipe>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  /**
+   * / Get recent recipes (newest first), optionally excluding recipes by the caller
+   * / Public read access - visitors can view recent recipes
+   * / When excludeOwn is true and caller is a guest, no filtering is applied
+   */
+  'getRecentRecipes' : ActorMethod<[boolean], Array<Recipe>>,
   'getRecipe' : ActorMethod<[RecipeId], Recipe>,
+  'getUserProducts' : ActorMethod<[Principal], Array<Product>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getUserRecipes' : ActorMethod<[Principal], Array<Recipe>>,
+  'getUserStorefront' : ActorMethod<[Principal], [] | [Storefront]>,
+  'getUserSupportLinks' : ActorMethod<[Principal], Array<ExternalSupportLink>>,
+  'hasUserLikedRecipe' : ActorMethod<[RecipeId], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'likeRecipe' : ActorMethod<[RecipeId], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveOrUpdateStorefront' : ActorMethod<[Storefront], undefined>,
+  'unlikeRecipe' : ActorMethod<[RecipeId], undefined>,
   'updateRecipe' : ActorMethod<
-    [RecipeId, string, string, Array<Ingredient>, Array<string>],
+    [
+      RecipeId,
+      string,
+      string,
+      Array<Ingredient>,
+      Array<string>,
+      [] | [ExternalBlob],
+    ],
     undefined
   >,
 }

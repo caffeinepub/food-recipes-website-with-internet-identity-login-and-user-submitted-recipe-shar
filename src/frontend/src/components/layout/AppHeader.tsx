@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { ChefHat, Plus } from 'lucide-react';
+import { ChefHat, Plus, DollarSign } from 'lucide-react';
 import LoginButton from '../auth/LoginButton';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { Button } from '@/components/ui/button';
@@ -31,20 +31,45 @@ export default function AppHeader() {
               onClick={() => navigate({ to: '/' })}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
+              Home
+            </button>
+            <button
+              onClick={() => navigate({ to: '/recipes' })}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Browse Recipes
             </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => navigate({ to: '/monetize' })}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Monetize
+              </button>
+            )}
           </nav>
         </div>
         <div className="flex items-center gap-3">
           {isAuthenticated && (
-            <Button
-              onClick={() => navigate({ to: '/recipe/new' })}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">New Recipe</span>
-            </Button>
+            <>
+              <Button
+                onClick={() => navigate({ to: '/monetize' })}
+                size="sm"
+                variant="outline"
+                className="gap-2 hidden sm:flex"
+              >
+                <DollarSign className="h-4 w-4" />
+                <span>Monetize</span>
+              </Button>
+              <Button
+                onClick={() => navigate({ to: '/recipe/new' })}
+                size="sm"
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">New Recipe</span>
+              </Button>
+            </>
           )}
           <LoginButton />
         </div>
